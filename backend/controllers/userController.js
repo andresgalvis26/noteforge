@@ -11,10 +11,6 @@ const registerUser = async (req, res) => {
         const existe = await User.findOne({ email });
         if (existe) return res.status(400).json({ message: 'El usuario ya existe' });
 
-
-        // Crear un nuevo usuario
-        // const newUser = new User({ name, email, password });
-        // await newUser.save(); // Guardar el nuevo usuario en la base de datos
         const user = await User.create({ name, email, password }); // Crear y guardar el nuevo usuario en la base de datos
 
         res.status(201).json({

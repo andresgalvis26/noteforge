@@ -5,6 +5,7 @@ const dotenv = require('dotenv');
 const mongoose = require('mongoose');
 
 const userRoutes = require('./routes/userRoutes'); // Importar rutas de usuario
+const noteRoutes = require('./routes/noteRoutes'); // Importar rutas de notas
 
 dotenv.config(); // Cargar variables de entorno desde .env
 
@@ -24,6 +25,8 @@ app.get('/', (req, res) => {
 });
 
 app.use('/api/users', userRoutes); // Usar las rutas de usuario en la ruta /api/users
+
+app.use('/api/notes', noteRoutes); // Usar las rutas de notas en la ruta /api/notes
 
 
 const PORT = process.env.PORT || 5000; // Puerto del servidor, por defecto 5000
