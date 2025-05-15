@@ -4,16 +4,19 @@ import Register from './pages/Register.jsx'
 import Dashboard from './pages/Dashboard.jsx'
 import NewNote from './pages/NewNote.jsx'
 import EditNote from './pages/EditNote.jsx'
+import Navbar from './components/Navbar.jsx'
+import PrivateRoute from './components/PrivateRoute.jsx'
 
 function App() {
   return (
     <Router>
+      <Navbar />
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path='/dashboard' element={<Dashboard />} />
-        <Route path='/note/new' element={<NewNote />} />
-        <Route path='/note/:id/edit' element={<EditNote />} />
+        <Route path='/dashboard' element={<PrivateRoute ><Dashboard /></PrivateRoute>} />
+        <Route path='/note/new' element={<PrivateRoute><NewNote /></PrivateRoute>} />
+        <Route path='/note/:id/edit' element={<PrivateRoute><EditNote /></PrivateRoute>} />
       </Routes>
     </Router>
   )

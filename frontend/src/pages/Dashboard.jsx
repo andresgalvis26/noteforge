@@ -69,7 +69,7 @@ function Dashboard () {
 
     return (
         <div>
-            <h2>Mis notas</h2>
+            <h2 className='text-3xl font-bold text-blue-600'>Mis notas</h2>
             {error && <p style={{ color: 'red'}}>{error}</p>}
 
             <ul>
