@@ -5,14 +5,17 @@ function Navbar() {
 
     const handleLogout = () => {
         localStorage.removeItem('token');
-        navigate('/login');
+        navigate('/');
     };
 
     return (
-        <nav>
-            <Link to="/dashboard">Inicio</Link>
-            <Link to="/note/new">Nueva Nota</Link>
-            <button onClick={handleLogout}>Cerrar sesión</button>
+        <nav className="bg-palette-secondary text-white px-6 py-3 shadow flex justify-between items-center">
+            <span className="text-lg font-bold tracking-wide">NoteForge</span>
+            <div className="space-x-6 text-sm">
+                <Link to="/dashboard" className="hover:underline">Inicio</Link>
+                <Link to="/note/new" className="hover:underline">Nueva Nota</Link>
+                <button onClick={handleLogout} className="hover:underline">Cerrar sesión</button>
+            </div>
         </nav>
     )    
 }
