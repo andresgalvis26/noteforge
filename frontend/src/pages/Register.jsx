@@ -2,7 +2,7 @@ import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-function Register () {
+function Register() {
 
     const navigate = useNavigate();
     const [form, setForm] = useState({
@@ -35,11 +35,17 @@ function Register () {
 
 
     return (
-        <div>
-            <h2>Registro</h2>
-            {error && <p style={{ color: 'red'}}>{error}</p>}
+        // <div className='flex justify-center items-center min-h-screen bg-gray-50'>
+            <form
+                onSubmit={handleSubmit}
+                className='bg-white p-8 rounded-md shadow-md w-full max-w-md'
+            >
 
-            <form onSubmit={handleSubmit}>
+                <h2 className='text-2xl font-bold mb-2 text-center'>REGISTRO</h2>
+                <p className='text-sm text-gray-500 mb-4 text-center'>Crea una cuenta para acceder a tu espacio</p>
+
+                <br />
+
                 <input
                     type="text"
                     name="name"
@@ -47,6 +53,7 @@ function Register () {
                     value={form.name}
                     onChange={handleChange}
                     required
+                    className='w-full border border-gray-300 rounded-md px-3 py-2 mb-3 focus:outline-none focus:ring-2 focus:ring-blue-500'
                 />
 
                 <br />
@@ -58,6 +65,7 @@ function Register () {
                     value={form.email}
                     onChange={handleChange}
                     required
+                    className='w-full border border-gray-300 rounded-md px-3 py-2 mb-3 focus:outline-none focus:ring-2 focus:ring-blue-500'
                 />
 
                 <br />
@@ -69,13 +77,16 @@ function Register () {
                     value={form.password}
                     onChange={handleChange}
                     required
+                    className='w-full border border-gray-300 rounded-md px-3 py-2 mb-3 focus:outline-none focus:ring-2 focus:ring-blue-500'
                 />
 
                 <br />
 
-                <button type="submit">Crear cuenta</button>
+                <button 
+                    type="submit"
+                    className='w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 transition font-semibold'>Crear cuenta</button>
             </form>
-        </div>
+        // </div>
     );
 };
 

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-function Login () {
+function Login() {
     const navigate = useNavigate();
     const [form, setForm] = useState({
         email: '',
@@ -10,14 +10,14 @@ function Login () {
     })
     const [error, setError] = useState('');
 
-    const handleChange = (e) => {
+    const handleChange = e => {
         setForm({
             ...form,
             [e.target.name]: e.target.value
         })
     };
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async e => {
         e.preventDefault();
 
         try {
@@ -31,11 +31,19 @@ function Login () {
     };
 
     return (
-        <div>
-            <h2>Iniciar sesión</h2>
-            {error && <p style={{ color: 'red'}}>{error}</p>}
-            
-            <form onSubmit={handleSubmit}>
+        // <div className='w-full border border-blue-500'>
+            // {error && <p style={{ color: 'red' }}>{error}</p>}
+
+            <form
+                onSubmit={handleSubmit}
+                className='bg-white border border-red-500 p-8 py-12 rounded-md shadow-md w-full max-w-md'
+            >
+
+                <h2 className='text-2xl font-bold mb-2 text-center'>INICIO DE SESIÓN</h2>
+                <p className='text-sm text-gray-500 mb-4 text-center'>Inicia sesión para acceder a tu cuenta</p>
+
+                <br />
+
                 <input
                     type="email"
                     name="email"
@@ -43,6 +51,7 @@ function Login () {
                     value={form.email}
                     onChange={handleChange}
                     required
+                    className='w-full border border-gray-300 rounded-md px-3 py-2 mb-3 focus:outline-none focus:ring-2 focus:ring-blue-500'
                 />
 
                 <br />
@@ -54,13 +63,21 @@ function Login () {
                     value={form.password}
                     onChange={handleChange}
                     required
+                    className='w-full border border-gray-300 rounded-md px-3 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500'
                 />
 
                 <br />
 
-                <button type="submit">Iniciar sesión</button>
+                <button 
+                    type="submit"
+                    className='w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 transition font-semibold'>
+                        Iniciar sesión
+                </button>
+
+                <p className='text-sm text-gray-500 mt-4 text-center'></p>
+                    ¿No tienes cuenta? <a href="/register" className='text-indigo-600 hover:text-indigo-700'>Regístrate aquí</a>
             </form>
-        </div>
+        // </div>
     );
 };
 
