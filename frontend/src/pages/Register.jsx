@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 function Register() {
 
@@ -26,6 +27,7 @@ function Register() {
         try {
             const res = await axios.post('http://localhost:5126/api/users/register', form);
             localStorage.setItem('token', res.data.token);
+            toast.success('Registro exitoso');
             navigate('/dashboard');
         } catch (error) {
             setError(error.response?.data?.msg || 'Error al registrar');
@@ -41,8 +43,8 @@ function Register() {
                 className='bg-white p-8 rounded-md shadow-md w-full max-w-md'
             >
 
-                <h2 className='text-2xl font-bold mb-2 text-center'>REGISTRO</h2>
-                <p className='text-sm text-gray-500 mb-4 text-center'>Crea una cuenta para acceder a tu espacio</p>
+                <h2 className='text-2xl font-bold mb-2 text-center text-palette-primary-03'>REGISTRO</h2>
+                <p className='text-sm text-gray-500 mb-4 text-center'>Crea una cuenta para acceder a tus notas.</p>
 
                 <br />
 
@@ -77,14 +79,19 @@ function Register() {
                     value={form.password}
                     onChange={handleChange}
                     required
-                    className='w-full border border-gray-300 rounded-md px-3 py-2 mb-3 focus:outline-none focus:ring-2 focus:ring-blue-500'
+                    className='w-full border border-gray-300 rounded-md px-3 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500'
                 />
 
                 <br />
 
                 <button 
                     type="submit"
-                    className='w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 transition font-semibold'>Crear cuenta</button>
+                    className='w-full bg-palette-primary-03 text-white py-2 rounded-md hover:bg-palette-primary-04 transition font-semibold'>
+                        Crear cuenta
+                </button>
+
+                <p className='text-sm text-gray-500 mt-4 text-center'></p>
+                    ¿Ya tienes cuenta? <a href="/" className='text-palette-primary-03 hover:text-palette-primary-04 hover:underline'>Inicia sesión aquí</a>
             </form>
         // </div>
     );

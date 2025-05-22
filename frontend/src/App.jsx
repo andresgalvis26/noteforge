@@ -7,14 +7,19 @@ import EditNote from './pages/EditNote.jsx'
 import Navbar from './components/Navbar.jsx'
 import PrivateRoute from './components/PrivateRoute.jsx'
 
-function App() {
+import { Toaster } from 'react-hot-toast';
+
+const App = () => {
   return (
-    <Router>
-      <div className="min-h-screen flex flex-col bg-gray-50">
+    <>
+      {/* Importación del Toaster */}
+      <Toaster position="top-right" reverseOrder={false} />
+
+      <div className="min-h-screen flex flex-col bg-palette-primary-01">
         <Navbar />
 
-        <main className='flex-1 flex justify-center items-center bg-yellow-200'>
-          <div className="bg-green-400 w-full flex justify-center max-w-7xl mx-auto p-2">
+        <main className='flex-1 flex justify-center items-center'>
+          <div className="w-full flex justify-center max-w-7xl mx-auto p-2">
             <Routes>
               <Route path="/" element={<Login />} />
               <Route path="/register" element={<Register />} />
@@ -25,7 +30,7 @@ function App() {
           </div>
         </main>
       </div>
-    </Router>
+    </>
   )
 }
 

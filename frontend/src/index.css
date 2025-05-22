@@ -3,4 +3,10 @@
 @theme {
     --color-palette-primary: #FAF6E9;
     --color-palette-secondary: #A0C878;
+
+    --color-palette-primary-01: #f2e8cf;
+    --color-palette-primary-02: #a7c957;
+    --color-palette-primary-03: #6a994e;
+    --color-palette-primary-04: #386641;
+    --color-palette-primary-05: #f3722c;
 }

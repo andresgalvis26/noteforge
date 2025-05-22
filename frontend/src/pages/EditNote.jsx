@@ -1,14 +1,17 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 function EditNote() {
     const { id } = useParams();
     const navigate = useNavigate();
-    const [note, setNote] = useState({ title: '', content: ''});
+    const [note, setNote] = useState({ title: '', content: '' });
     const [error, setError] = useState('');
 
     useEffect(() => {
+        toast.success('Nota cargada con éxito 🎉');
+
         const fetchNote = async () => {
             const token = localStorage.getItem('token');
 
@@ -40,7 +43,7 @@ function EditNote() {
             }
         }
         fetchNote();
-    }, [id])
+    }, [id, navigate]);
 
     const handleChange = e => {
         setNote({
@@ -60,46 +63,70 @@ function EditNote() {
                     Authorization: `Bearer ${token}`
                 }
             });
+            toast.success('Nota actualizada con éxito 🎉');
             navigate('/dashboard'); // Redirigir al dashboard después de editar la nota
         } catch (error) {
             if (error.response?.status === 401) {
                 setError('Sesión no válida. Inicia sesión nuevamente.');
                 navigate('/login');
             } else {
-                setError(error.response?.data?.msg || 'Error al editar la nota');
+                toast.error(error.response?.data?.message || 'Error al editar la nota');
+                // setError(error.response?.data?.msg || 'Error al editar la nota');
             }
         }
     }
 
     return (
-        <div>
-            <h2>Editar nota</h2>
-            {error && <p style={{ color: 'red'}}>{error}</p>}
-            <form onSubmit={handleSubmit}>
-                <input
-                    type="text"
-                    name="title"
-                    placeholder="Título"
-                    value={note.title}
-                    onChange={handleChange}
-                    required
-                />
+        <form
+            onSubmit={handleSubmit}
+            className='bg-white p-8 py-10 rounded-md shadow-md w-full max-w-lg'
+        >
+            <h2 className='text-2xl font-bold mb-2 text-center text-palette-primary-03'>Editar nota</h2>
+            <p className="text-sm text-gray-500 mb-6 text-center">
+                Edita el título y contenido de tu nota.
+            </p>
 
-                <br />
+            <input
+                type="text"
+                name="title"
+                placeholder="Título"
+                value={note.title}
+                onChange={handleChange}
+                required
+                className='w-full border border-gray-300 rounded-md px-3 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500'
+            />
 
-                <textarea
-                    name="content"
-                    placeholder="Contenido"
-                    value={note.content}
-                    onChange={handleChange}
-                    required
-                ></textarea>
+            <br />
 
-                <br />
+            <textarea
+                name="content"
+                placeholder="Contenido"
+                value={note.content}
+                onChange={handleChange}
+                required
+                className='w-full border border-gray-300 rounded-md px-3 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500'
+                rows="10"
+            ></textarea>
 
-                <button type="submit">Actualizar nota</button>
-            </form>
-        </div>
+            <br />
+
+            <div className="flex gap-x-2">
+                <button
+                    type="button"
+                    onClick={() => navigate('/dashboard')}
+                    className='w-full bg-gray-300 text-gray-700 font-bold py-2 px-4 rounded-md hover:bg-gray-400 transition duration-200'
+                >
+                    Cancelar
+                </button>
+                <button
+                    type="submit"
+                    className='w-full bg-palette-primary-03 text-white font-bold py-2 px-4 rounded-md hover:bg-palette-primary-04 transition duration-200'
+                >
+                    Actualizar nota
+                </button>
+            </div>
+
+        </form>
     )
 
 }
