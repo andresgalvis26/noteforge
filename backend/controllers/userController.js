@@ -46,7 +46,7 @@ const loginUser = async (req, res) => {
 }
 
 const generarJWT = (id) => {
-    return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '30d' }); // Generar un token JWT con el ID del usuario y una expiración de 30 días
+    return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '1h' }); // Generar un token JWT con el ID del usuario y una expiración de 30 días
 }
 
 module.exports = {

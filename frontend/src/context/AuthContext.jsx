@@ -19,14 +19,25 @@ export const AuthProvider = ({ children }) => {
 
         if (storedToken) {
             try {
-                // Decodificamos el token JWT para obtener la información del usuario
-                const decoded = jwtDecode(storedToken);
-                setUser({ id: decoded.id }); // Puedes expandir con más datos del token
+                const decoded = jwtDecode(storedToken); // Decodificamos el token JWT para obtener la información del usuario
+
+                const currentTime = Date.now() / 1000; // Obtenemos el tiempo actual en segundos
+                if (decoded.exp < currentTime) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Token expirado',
+                        text: 'Tu sesión ha expirado. Por favor, inicia sesión nuevamente.',
+                        confirmButtonText: 'Aceptar'
+                    }).then(() => {
+                        logout(); // Si el token ha expirado, cerramos sesión
+                    })
+                }
+
+                setUser({ id: decoded.id });
                 setToken(storedToken);
             } catch (error) {
                 console.error('Error al decodificar el token:', error);
-                setUser(null);
-                setToken(null);
+                logout(); // Si hay un error al decodificar el token, cerramos sesión
             } 
         } else {
             // console.log('No hay token en localStorage');
