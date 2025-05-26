@@ -130,7 +130,7 @@ function Dashboard() {
                     placeholder="Buscar nota..."
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 mb-4 bg-white shadow-md focus:outline-none focus:ring-2 focus:ring-palette-primary-03 transition duration-200"
+                    className="w-full border border-gray-300 rounded-md px-3 py-2 mb-4 bg-white shadow-md focus:outline-none focus:ring-2 focus:ring-palette-primary-03 transition duration-200 dark:bg-gray-800 dark:border-gray-700 dark:text-white"
                 >
                 </input>
             </div>
@@ -139,7 +139,7 @@ function Dashboard() {
             <div className='mb-4'>
                 <button
                     onClick={() => setSelectedTag('')}
-                    className={`px-3 py-2 rounded-full text-sm font-medium ${selectedTag === '' ? 'bg-palette-primary-03 text-white' : 'bg-gray-200 text-gray-700'} transition duration-200`}
+                    className={`px-3 py-2 rounded-full text-sm font-medium ${selectedTag === '' ? 'bg-palette-primary-03 text-white dark:bg-palette-primary-04' : 'bg-gray-200 text-gray-700'} transition duration-200`}
                 >
                     Todas
                 </button>
@@ -148,7 +148,7 @@ function Dashboard() {
                     <button
                         key={index}
                         onClick={() => setSelectedTag(tag)}
-                        className={`px-3 py-2 rounded-full text-sm font-medium ${selectedTag === tag ? 'bg-palette-primary-03 text-white' : 'bg-gray-200 text-gray-700'} transition duration-200 ml-2 mb-2`}
+                        className={`px-3 py-2 rounded-full text-sm font-medium ${selectedTag === tag ? 'bg-palette-primary-03 text-white dark:bg-palette-primary-04' : 'bg-gray-200 text-gray-700'} transition duration-200 ml-2 mb-2`}
                     >
                         #{tag} ({tagCount[tag] || 0})
                     </button>
@@ -167,10 +167,10 @@ function Dashboard() {
                     {filteredNotes.map(note => (
                         <div
                             key={note._id}
-                            className="bg-white shadow-md rounded-md p-4 mb-2 border border-gray-200"
+                            className="bg-white shadow-md rounded-md p-4 mb-2 border border-gray-200 dark:bg-gray-800 dark:border-gray-700 transition duration-200 hover:shadow-lg hover:border-palette-primary-03 cursor-pointer"
                         >
                             <h3 className='text-xl font-semibold text-palette-primary-03 mb-1'>{note.title}</h3>
-                            <p className="text-gray-700 mb-2 whitespace-pre-line">{note.content}</p>
+                            <p className="text-gray-700 mb-2 whitespace-pre-line dark:text-white">{note.content}</p>
                             <div className="text-xs text-gray-400 mb-3">
                                 <p>📅 Creación: {new Date(note.createdAt).toLocaleDateString()}</p>
                                 <p>✏️ Modificación: {new Date(note.updatedAt).toLocaleDateString()}</p>

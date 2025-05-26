@@ -15,7 +15,7 @@ const App = () => {
       {/* Importación del Toaster */}
       <Toaster position="top-right" reverseOrder={false} />
 
-      <div className="min-h-screen flex flex-col bg-palette-primary-01">
+      <div className="min-h-screen flex flex-col bg-palette-primary-01 dark:bg-gray-800">
         <Navbar />
 
         <main className='flex-1 flex justify-center items-center'>
