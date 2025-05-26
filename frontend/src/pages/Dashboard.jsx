@@ -8,7 +8,22 @@ function Dashboard() {
     const [notes, setNotes] = useState([]);
     const [error, setError] = useState('');
     const [search, setSearch] = useState('');
+    const [selectedTag, setSelectedTag] = useState('');
     const navigate = useNavigate();
+    const tagColors = [
+        'bg-red-100 text-red-700',
+        'bg-green-100 text-green-700',
+        'bg-blue-100 text-blue-700',
+        'bg-yellow-100 text-yellow-700',
+        'bg-purple-100 text-purple-700',
+        'bg-pink-100 text-pink-700',
+        'bg-indigo-100 text-indigo-700',
+        'bg-teal-100 text-teal-700'
+    ];
+
+    useEffect(() => {
+        fetchNotes();
+    }, []);
 
     const fetchNotes = async () => {
         const token = localStorage.getItem('token');
@@ -24,14 +39,6 @@ function Dashboard() {
                 }
             });
 
-            console.log('Notas obtenidas:', res.data);
-
-            if (res.data.length === 0) {
-                // setError('No tienes notas creadas. Crea una nueva nota.');
-            } else {
-                setError(''); // Limpiar el error si hay notas
-            }
-
             setNotes(res.data);
         } catch (error) {
             if (error.response?.status === 401) {
@@ -41,6 +48,22 @@ function Dashboard() {
                 setError('Error al obtener las notas');
             }
         }
+    };
+
+    const getTagColor = (tag) => {
+        let hash = 0;
+
+        // Recorre cada carácter de la palabra (ej. "urgente")
+        for (let i = 0; i < tag.length; i++) {
+            // Convierte el carácter a su código ASCII y actualiza el hash
+            hash = tag.charCodeAt(i) + ((hash << 5) - hash);
+        }
+
+        // Asegura que el índice sea positivo y dentro del array
+        const index = Math.abs(hash) % tagColors.length;
+
+        // Devuelve el color que le corresponde a ese índice
+        return tagColors[index];
     };
 
     const handleDelete = async (id) => {
@@ -81,11 +104,22 @@ function Dashboard() {
         }
     }
 
-    useEffect(() => {
-        fetchNotes();
-    }, []);
+    const filteredNotes = notes.filter(note =>
+        (note.title.toLowerCase().includes(search.toLowerCase()) ||
+            note.content.toLowerCase().includes(search.toLowerCase())) &&
+        (selectedTag
+            ? (note.tags || []).map(tags => tags.trim()).includes(selectedTag.trim())
+            : true)
+    );
 
-    const filteredNotes = notes.filter(note => note.title.toLowerCase().includes(search.toLowerCase()) || note.content.toLowerCase().includes(search.toLowerCase()));
+    const allTags = Array.from(new Set(notes.flatMap(note => note.tags || [])))
+
+    const tagCount = {};
+    notes.forEach(note => {
+        (note.tags || []).forEach(tag => {
+            tagCount[tag] = (tagCount[tag] || 0) + 1;
+        })
+    })
 
     return (
         <div className='mt-4'>
@@ -101,6 +135,25 @@ function Dashboard() {
                 </input>
             </div>
 
+            {/* Filtro por etiquetas */}
+            <div className='mb-4'>
+                <button
+                    onClick={() => setSelectedTag('')}
+                    className={`px-3 py-2 rounded-full text-sm font-medium ${selectedTag === '' ? 'bg-palette-primary-03 text-white' : 'bg-gray-200 text-gray-700'} transition duration-200`}
+                >
+                    Todas
+                </button>
+
+                {allTags.map((tag, index) => (
+                    <button
+                        key={index}
+                        onClick={() => setSelectedTag(tag)}
+                        className={`px-3 py-2 rounded-full text-sm font-medium ${selectedTag === tag ? 'bg-palette-primary-03 text-white' : 'bg-gray-200 text-gray-700'} transition duration-200 ml-2 mb-2`}
+                    >
+                        #{tag} ({tagCount[tag] || 0})
+                    </button>
+                ))}
+            </div>
 
             {notes.length === 0 ? (
                 <p className='text-xl text-center text-gray-500 text-sm'>
@@ -126,7 +179,7 @@ function Dashboard() {
                                 {note.tags.map((tag, index) => (
                                     <span
                                         key={index}
-                                        className="bg-indigo-100 text-indigo-700 px-2 py-1 rounded-full text-xs"
+                                        className={`px-2 py-1 rounded-full text-xs font-medium ${getTagColor(tag)} transition duration-200`}
                                     >
                                         #{tag}
                                     </span>
