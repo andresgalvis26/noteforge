@@ -7,6 +7,7 @@ import Swal from 'sweetalert2';
 function Dashboard() {
     const [notes, setNotes] = useState([]);
     const [error, setError] = useState('');
+    const [search, setSearch] = useState('');
     const navigate = useNavigate();
 
     const fetchNotes = async () => {
@@ -22,6 +23,8 @@ function Dashboard() {
                     Authorization: `Bearer ${token}`
                 }
             });
+
+            console.log('Notas obtenidas:', res.data);
 
             if (res.data.length === 0) {
                 // setError('No tienes notas creadas. Crea una nueva nota.');
@@ -82,8 +85,23 @@ function Dashboard() {
         fetchNotes();
     }, []);
 
+    const filteredNotes = notes.filter(note => note.title.toLowerCase().includes(search.toLowerCase()) || note.content.toLowerCase().includes(search.toLowerCase()));
+
     return (
         <div className='mt-4'>
+            {/* Input de búsqueda */}
+            <div className='mb-4'>
+                <input
+                    type="text"
+                    placeholder="Buscar nota..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    className="w-full border border-gray-300 rounded-md px-3 py-2 mb-4 bg-white shadow-md focus:outline-none focus:ring-2 focus:ring-palette-primary-03 transition duration-200"
+                >
+                </input>
+            </div>
+
+
             {notes.length === 0 ? (
                 <p className='text-xl text-center text-gray-500 text-sm'>
                     📝 Aún no tienes notas creadas. ¡Empieza con una nueva nota!
@@ -93,7 +111,7 @@ function Dashboard() {
                     {/* <h2 className='text-3xl mb-4 font-bold text-blue-600'>Mis notas</h2> */}
                     {error && <p style={{ color: 'red' }}>{error}</p>}
 
-                    {notes.map(note => (
+                    {filteredNotes.map(note => (
                         <div
                             key={note._id}
                             className="bg-white shadow-md rounded-md p-4 mb-2 border border-gray-200"
@@ -103,6 +121,16 @@ function Dashboard() {
                             <div className="text-xs text-gray-400 mb-3">
                                 <p>📅 Creación: {new Date(note.createdAt).toLocaleDateString()}</p>
                                 <p>✏️ Modificación: {new Date(note.updatedAt).toLocaleDateString()}</p>
+                            </div>
+                            <div className="mb-2 flex flex-wrap gap-2">
+                                {note.tags.map((tag, index) => (
+                                    <span
+                                        key={index}
+                                        className="bg-indigo-100 text-indigo-700 px-2 py-1 rounded-full text-xs"
+                                    >
+                                        #{tag}
+                                    </span>
+                                ))}
                             </div>
                             <div className="mt-2 flex gap-6">
                                 <button

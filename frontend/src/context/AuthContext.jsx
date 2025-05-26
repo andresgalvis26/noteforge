@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { jwtDecode } from 'jwt-decode'; // Importamos jwtDecode para decodificar el token JWT
 import Swal from 'sweetalert2'; // Importamos SweetAlert2 para mostrar alertas
 import { useNavigate } from 'react-router-dom'; // Importamos useNavigate para redirigir al usuario
+import toast from 'react-hot-toast'; // Importamos react-hot-toast para mostrar notificaciones
 
 const AuthContext = createContext(); // Creamos el contexto de autenticación
 
@@ -29,7 +30,7 @@ export const AuthProvider = ({ children }) => {
                         text: 'Tu sesión ha expirado. Por favor, inicia sesión nuevamente.',
                         confirmButtonText: 'Aceptar'
                     }).then(() => {
-                        logout(); // Si el token ha expirado, cerramos sesión
+                        logout(false); // Si el token ha expirado, cerramos sesión
                     })
                 }
 
@@ -38,7 +39,7 @@ export const AuthProvider = ({ children }) => {
             } catch (error) {
                 console.error('Error al decodificar el token:', error);
                 logout(); // Si hay un error al decodificar el token, cerramos sesión
-            } 
+            }
         } else {
             // console.log('No hay token en localStorage');
             setUser(null);
@@ -53,26 +54,28 @@ export const AuthProvider = ({ children }) => {
         setToken(token);
     }
 
-    const logout = () => {
-        Swal.fire({
-            title: '¿Estás seguro?',
-            text: "¡Cerrar sesión eliminará el token de acceso!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Sí, cerrar sesión',
-            cancelButtonText: 'Cancelar'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                // Si el usuario confirma, eliminar el token y redirigir
-                localStorage.removeItem('token');
-                setUser(null);
-                setToken(null);
-                navigate('/'); // Redirigimos al usuario a la página de inicio
-                Swal.fire('Sesión cerrada', 'Has cerrado sesión con éxito', 'success');
-            }
-        })
+    const logout = async (confirm = true) => {
+
+        if (confirm) {
+            const result = await Swal.fire({
+                title: '¿Estás seguro?',
+                text: "¡Cerrar sesión eliminará el token de acceso!",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sí, cerrar sesión',
+                cancelButtonText: 'Cancelar'
+            })
+
+            if (!result.isConfirmed) return; // Si el usuario cancela, no hacemos nada
+        }
+
+        localStorage.removeItem('token'); // Eliminamos el token del localStorage
+        setUser(null); // Limpiamos el estado del usuario
+        setToken(null); // Limpiamos el estado del token
+        toast.success('Sesión cerrada con éxito'); // Mostramos una notificación de éxito
+        navigate('/'); // Redirigimos al usuario a la página de inicio de sesión
     }
 
     return (

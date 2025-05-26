@@ -6,7 +6,7 @@ import toast from 'react-hot-toast';
 function EditNote() {
     const { id } = useParams();
     const navigate = useNavigate();
-    const [note, setNote] = useState({ title: '', content: '' });
+    const [note, setNote] = useState({ title: '', content: '', tags: '' });
     const [error, setError] = useState('');
 
     useEffect(() => {
@@ -31,7 +31,8 @@ function EditNote() {
                 const noteToEdit = res.data.find(note => note._id === id);
                 setNote({
                     title: noteToEdit?.title || '',
-                    content: noteToEdit?.content || ''
+                    content: noteToEdit?.content || '',
+                    tags: noteToEdit?.tags ? noteToEdit.tags.join(', ') : '' // Convertir el array de etiquetas a una cadena separada por comas
                 });
             } catch (error) {
                 if (error.response?.status === 401) {
@@ -57,8 +58,13 @@ function EditNote() {
 
         const token = localStorage.getItem('token');
 
+        const dataToSend = {
+            ...note,
+            tags: note.tags ? note.tags.split(',').map(tag => tag.trim()).filter(tag => tag !== '') : [] // Convertir las etiquetas a un array, quitar espacios y filtrar etiquetas vacías
+        }
+
         try {
-            await axios.put(`http://localhost:5126/api/notes/${id}`, note, {
+            await axios.put(`http://localhost:5126/api/notes/${id}`, dataToSend, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -109,6 +115,16 @@ function EditNote() {
             ></textarea>
 
             <br />
+
+            <input
+                type="text"
+                name="tags"
+                placeholder="Etiquetas (separadas por comas)"
+                value={note.tags || ''}
+                onChange={handleChange}
+                className='w-full border border-gray-300 rounded-md px-3 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500'
+            >
+            </input>
 
             <div className="flex gap-x-2">
                 <button

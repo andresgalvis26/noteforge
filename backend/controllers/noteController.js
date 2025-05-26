@@ -9,13 +9,14 @@ const  getNotes = async (req, res) => {
 
 // POST: Crear nueva nota
 const createNote = async (req, res) => {
-    const { title, content } = req.body; // Desestructurar el cuerpo de la solicitud
+    const { title, content, tags } = req.body; // Desestructurar el cuerpo de la solicitud
     if (!title || !content) return res.status(400).json({ message: 'Título y contenido son obligatorios'})
 
     const note = await Note.create({
         user: req.user._id, // Asignar el ID del usuario a la nota
         title,
-        content
+        content,
+        tags
     });
 
     res.status(201).json(note); // Enviar la respuesta con la nota creada
@@ -32,6 +33,7 @@ const updateNote = async (req, res) => {
 
     note.title = req.body.title || note.title; // Actualizar el título si se proporciona
     note.content = req.body.content || note.content; // Actualizar el contenido si se proporciona
+    note.tags = req.body.tags || note.tags; // Actualizar las etiquetas si se proporcionan
     const updatedNote = await note.save(); // Guardar los cambios en la nota
 
     res.json(updatedNote); // Enviar la respuesta con la nota actualizada

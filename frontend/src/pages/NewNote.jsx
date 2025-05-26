@@ -4,8 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
 const NewNote = () => {
-    const [form, setForm] = useState({ title: '', content: '' });
-    const [error, setError] = useState('');
+    const [form, setForm] = useState({ title: '', content: '', tags: ''});
+    // const [error, setError] = useState('');
     const navigate = useNavigate();
 
     const handleChange = e => {
@@ -20,13 +20,18 @@ const NewNote = () => {
 
         const token = localStorage.getItem('token');
         if (!token) {
-            setError('No se encontró el token. Inicia sesión nuevamente.');
+            // setError('No se encontró el token. Inicia sesión nuevamente.');
             navigate('/login');
             return;
         }
 
+        const dataToSend = {
+            ...form,
+            tags: form.tags ? form.tags.split(',').map(tag => tag.trim()).filter(tag => tag !== '') : [] // Convertir las etiquetas a un array, quitar espacios y filtrar etiquetas vacías
+        }
+
         try {
-            await axios.post('http://localhost:5126/api/notes/', form, {
+            await axios.post('http://localhost:5126/api/notes/', dataToSend, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -71,6 +76,18 @@ const NewNote = () => {
                 className='w-full border border-gray-300 rounded-md px-3 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500'
                 rows="10"
             ></textarea>
+
+            <br />
+
+            <input
+                type="text"
+                name="tags"
+                placeholder="Etiquetas (separadas por comas)"
+                value={form.tags}
+                onChange={handleChange}
+                className='w-full border border-gray-300 rounded-md px-3 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500'
+            >
+            </input>
 
             <br />
 
