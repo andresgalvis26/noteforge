@@ -114,6 +114,16 @@ function Dashboard() {
 
     const allTags = Array.from(new Set(notes.flatMap(note => note.tags || [])))
 
+    const totalNotas = notes.length;
+
+    const ultimaNotaCreada = notes.reduce((latest, note) => {
+        return new Date(note.createdAt) > new Date(latest.createdAt) ? note : latest;
+    }, notes[0] || {});
+
+    const ultimaModificada = notes.reduce((latest, note) => {
+        return new Date(note.updatedAt) > new Date(latest.updatedAt) ? note : latest;
+    }, notes[0] || {});
+
     const tagCount = {};
     notes.forEach(note => {
         (note.tags || []).forEach(tag => {
@@ -121,47 +131,100 @@ function Dashboard() {
         })
     })
 
+    const etiquetaMasUsada = Object.entries(tagCount).sort((a, b) => b[1] - a[1][0]);
+
     return (
         <div className='mt-4'>
-            {/* Input de búsqueda */}
-            <div className='mb-4'>
-                <input
-                    type="text"
-                    placeholder="Buscar nota..."
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 mb-4 bg-white shadow-md focus:outline-none focus:ring-2 focus:ring-palette-primary-03 transition duration-200 dark:bg-gray-800 dark:border-gray-700 dark:text-white"
-                >
-                </input>
-            </div>
 
-            {/* Filtro por etiquetas */}
-            <div className='mb-4'>
-                <button
-                    onClick={() => setSelectedTag('')}
-                    className={`px-3 py-2 rounded-full text-sm font-medium ${selectedTag === '' ? 'bg-palette-primary-03 text-white dark:bg-palette-primary-04' : 'bg-gray-200 text-gray-700'} transition duration-200`}
-                >
-                    Todas
-                </button>
+            {notes.length > 0 && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                    <div className="bg-white dark:bg-gray-800 rounded-md shadow p-4 text-center">
+                        <h3 className="text-sm text-gray-500 dark:text-gray-400 mb-1">Total de notas</h3>
+                        <p className="text-2xl font-bold text-palette-primary-04">{totalNotas}</p>
+                    </div>
 
-                {allTags.map((tag, index) => (
-                    <button
-                        key={index}
-                        onClick={() => setSelectedTag(tag)}
-                        className={`px-3 py-2 rounded-full text-sm font-medium ${selectedTag === tag ? 'bg-palette-primary-03 text-white dark:bg-palette-primary-04' : 'bg-gray-200 text-gray-700'} transition duration-200 ml-2 mb-2`}
-                    >
-                        #{tag} ({tagCount[tag] || 0})
-                    </button>
-                ))}
-            </div>
+                    <div className="bg-white dark:bg-gray-800 rounded-md shadow p-4 text-center">
+                        <h3 className="text-sm text-gray-500 dark:text-gray-400 mb-1">Última nota creada</h3>
+                        <p className="text-sm text-gray-700 dark:text-gray-200">{ultimaNotaCreada?.title || '—'}</p>
+                        <p className="text-xs text-gray-400">{new Date(ultimaNotaCreada?.createdAt).toLocaleDateString()}</p>
+                    </div>
+
+                    <div className="bg-white dark:bg-gray-800 rounded-md shadow p-4 text-center">
+                        <h3 className="text-sm text-gray-500 dark:text-gray-400 mb-1">Más reciente</h3>
+                        <p className="text-sm text-gray-700 dark:text-gray-200">{ultimaModificada?.title || '—'}</p>
+                        <p className="text-xs text-gray-400">{new Date(ultimaModificada?.updatedAt).toLocaleDateString()}</p>
+                    </div>
+
+                    <div className="bg-white dark:bg-gray-800 rounded-md shadow p-4 text-center">
+                        <h3 className="text-sm text-gray-500 dark:text-gray-400 mb-1">Etiqueta más usada</h3>
+                        <p className="text-sm text-indigo-700 dark:text-indigo-300 font-medium">
+                            #{etiquetaMasUsada?.[0] || '—'} ({etiquetaMasUsada?.[1] || 0})
+                        </p>
+                    </div>
+                </div>
+            )}
+
+            {notes.length > 0 && (
+                <>
+                    <div className='mb-4 flex justify-between items-center gap-4'>
+                        <input
+                            type="text"
+                            placeholder="Buscar nota..."
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            className="w-full border border-gray-300 rounded-md px-3 py-2 bg-white shadow-md focus:outline-none focus:ring-2 focus:ring-palette-primary-03 transition duration-200 dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+                        >
+                        </input>
+
+                        <button
+                            className="bg-palette-primary-03 text-white px-3 py-2 rounded-md shadow-md hover:bg-palette-primary-04 transition duration-200"
+                            onClick={() => navigate('/note/new')}
+                            title="Crear nueva nota"
+                        >
+                            +
+                        </button>
+                    </div>
+
+                    {/* Filtro por etiquetas */}
+                    <div className='mb-4'>
+                        <button
+                            onClick={() => setSelectedTag('')}
+                            className={`px-3 py-2 rounded-full text-sm font-medium ${selectedTag === '' ? 'bg-palette-primary-03 text-white dark:bg-palette-primary-04' : 'bg-gray-200 text-gray-700'} transition duration-200`}
+                        >
+                            Todas
+                        </button>
+
+                        {allTags.map((tag, index) => (
+                            <button
+                                key={index}
+                                onClick={() => setSelectedTag(tag)}
+                                className={`px-3 py-2 rounded-full text-sm font-medium ${selectedTag === tag ? 'bg-palette-primary-03 text-white dark:bg-palette-primary-04' : 'bg-gray-200 text-gray-700'} transition duration-200 ml-2 mb-2`}
+                            >
+                                #{tag} ({tagCount[tag] || 0})
+                            </button>
+                        ))}
+                    </div>
+                </>
+            )}
 
             {notes.length === 0 ? (
-                <p className='text-xl text-center text-gray-500 text-sm'>
-                    📝 Aún no tienes notas creadas. ¡Empieza con una nueva nota!
-                </p>
+                <>
+                    <p className='text-xl text-center text-gray-500 text-sm'>
+                        📝 Aún no tienes notas creadas. ¡Empieza con una nueva nota!
+                    </p>
+                    <div className='flex justify-center mt-4'>
+                        <button
+                            className="bg-palette-primary-03 text-white px-4 py-2 rounded-md shadow-md hover:bg-palette-primary-04 transition duration-200"
+                            onClick={() => navigate('/note/new')}
+                        >
+                            Crear nueva nota
+                        </button>
+
+                    </div>
+                </>
+
             ) : (
                 <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5'>
-                    {/* <h2 className='text-3xl mb-4 font-bold text-blue-600'>Mis notas</h2> */}
                     {error && <p style={{ color: 'red' }}>{error}</p>}
 
                     {filteredNotes.map(note => (
@@ -172,8 +235,8 @@ function Dashboard() {
                             <h3 className='text-xl font-semibold text-palette-primary-03 mb-1'>{note.title}</h3>
                             <p className="text-gray-700 mb-2 whitespace-pre-line dark:text-white">{note.content}</p>
                             <div className="text-xs text-gray-400 mb-3">
-                                <p>📅 Creación: {new Date(note.createdAt).toLocaleDateString()}</p>
-                                <p>✏️ Modificación: {new Date(note.updatedAt).toLocaleDateString()}</p>
+                                <p>📅 Creación: {new Date(note.createdAt).toLocaleDateString()} {new Date(note.createdAt).toLocaleTimeString()}</p>
+                                <p>✏️ Modificación: {new Date(note.updatedAt).toLocaleDateString()} {new Date(note.createdAt).toLocaleTimeString()}</p>
                             </div>
                             <div className="mb-2 flex flex-wrap gap-2">
                                 {note.tags.map((tag, index) => (
