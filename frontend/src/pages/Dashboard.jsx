@@ -1,8 +1,20 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import Swal from 'sweetalert2';
+import { PlusIcon } from '@heroicons/react/24/solid'
+import { Bar } from 'react-chartjs-2';
+import {
+    Chart as ChartJS,
+    BarElement,
+    CategoryScale,
+    LinearScale,
+    Tooltip,
+    Legend,
+} from 'chart.js';
+
+ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
 function Dashboard() {
     const [notes, setNotes] = useState([]);
@@ -20,10 +32,6 @@ function Dashboard() {
         'bg-indigo-100 text-indigo-700',
         'bg-teal-100 text-teal-700'
     ];
-
-    useEffect(() => {
-        fetchNotes();
-    }, []);
 
     const fetchNotes = async () => {
         const token = localStorage.getItem('token');
@@ -50,21 +58,9 @@ function Dashboard() {
         }
     };
 
-    const getTagColor = (tag) => {
-        let hash = 0;
-
-        // Recorre cada carácter de la palabra (ej. "urgente")
-        for (let i = 0; i < tag.length; i++) {
-            // Convierte el carácter a su código ASCII y actualiza el hash
-            hash = tag.charCodeAt(i) + ((hash << 5) - hash);
-        }
-
-        // Asegura que el índice sea positivo y dentro del array
-        const index = Math.abs(hash) % tagColors.length;
-
-        // Devuelve el color que le corresponde a ese índice
-        return tagColors[index];
-    };
+    useEffect(() => {
+        fetchNotes();
+    }, []);
 
     const handleDelete = async (id) => {
         const result = await Swal.fire({
@@ -104,6 +100,25 @@ function Dashboard() {
         }
     }
 
+
+    const getTagColor = (tag) => {
+        let hash = 0;
+
+        // Recorre cada carácter de la palabra (ej. "urgente")
+        for (let i = 0; i < tag.length; i++) {
+            // Convierte el carácter a su código ASCII y actualiza el hash
+            hash = tag.charCodeAt(i) + ((hash << 5) - hash);
+        }
+
+        // Asegura que el índice sea positivo y dentro del array
+        const index = Math.abs(hash) % tagColors.length;
+
+        // Devuelve el color que le corresponde a ese índice
+        return tagColors[index];
+    };
+
+
+
     const filteredNotes = notes.filter(note =>
         (note.title.toLowerCase().includes(search.toLowerCase()) ||
             note.content.toLowerCase().includes(search.toLowerCase())) &&
@@ -116,13 +131,17 @@ function Dashboard() {
 
     const totalNotas = notes.length;
 
-    const ultimaNotaCreada = notes.reduce((latest, note) => {
-        return new Date(note.createdAt) > new Date(latest.createdAt) ? note : latest;
-    }, notes[0] || {});
+    const ultimaNotaCreada = useMemo(() =>
+        notes.reduce((latest, note) =>
+            new Date(note.createdAt) > new Date(latest.createdAt) ? note : latest
+            , notes[0] || {})
+        , [notes]);
 
-    const ultimaModificada = notes.reduce((latest, note) => {
-        return new Date(note.updatedAt) > new Date(latest.updatedAt) ? note : latest;
-    }, notes[0] || {});
+    const ultimaModificada = useMemo(() =>
+        notes.reduce((latest, note) =>
+            new Date(note.updatedAt) > new Date(latest.updatedAt) ? note : latest
+            , notes[0] || {})
+        , [notes]);
 
     const tagCount = {};
     notes.forEach(note => {
@@ -132,6 +151,36 @@ function Dashboard() {
     })
 
     const etiquetaMasUsada = Object.entries(tagCount).sort((a, b) => b[1] - a[1][0]);
+
+
+
+    const etiquetas = Object.keys(tagCount);
+    const cantidades = Object.values(tagCount);
+    const dataBarras = {
+        labels: etiquetas,
+        datasets: [
+            {
+                label: 'Notas por etiqueta',
+                data: cantidades,
+                backgroundColor: 'rgba(107, 142, 35, 0.6)',
+                borderColor: 'rgba(107, 142, 35, 1)',
+                borderWidth: 1,
+            }
+        ]
+    };
+
+    const opcionesBarras = {
+        responsive: true,
+        plugins: {
+            legend: { display: false },
+            tooltip: { enabled: true }
+        },
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    };
 
     return (
         <div className='mt-4'>
@@ -165,6 +214,15 @@ function Dashboard() {
             )}
 
             {notes.length > 0 && (
+                <div className="bg-white dark:bg-gray-800 p-6 rounded-md shadow-md mb-8">
+                    <h2 className="text-lg font-semibold mb-4 text-palette-primary-04 dark:text-white">
+                        Distribución de notas por etiqueta
+                    </h2>
+                    <Bar data={dataBarras} options={opcionesBarras} />
+                </div>
+            )}
+
+            {notes.length > 0 && (
                 <>
                     <div className='mb-4 flex justify-between items-center gap-4'>
                         <input
@@ -181,7 +239,7 @@ function Dashboard() {
                             onClick={() => navigate('/note/new')}
                             title="Crear nueva nota"
                         >
-                            +
+                            <PlusIcon className="h-5 w-5 text-white" />
                         </button>
                     </div>
 
